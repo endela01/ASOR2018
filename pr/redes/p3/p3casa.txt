@@ -1,0 +1,597 @@
+
+Ejercicio 1. El archivo de configuración del cliente DNS es ​ /etc/resolv.conf​ . Consultar la página de manual de ​ resolv.conf y estudiar el significado de las opciones ​ nameserver y ​ search​ . Ver el
+contenido del archivo en la máquina física del laboratorio.
+
+resolver - fichero de configuración del servicio resolver
+
+
+ nameserver Name server IP address
+              Internet address of a  name  server  that  the  resolver  should
+              query,  either  an  IPv4  address
+
+
+search Search list for host-name lookup.
+              The search list is normally determined  from  the  local  domain
+              name;  by default, it contains only the local domain nameq
+nota
+----
+Formato del registro: [name] [ttl] [class] type data
+
+ -> name: que identifica al registro, normalmente nombre de host o dominio
+ -> ttl: en segundos, tiempo que se puede cachear y considerarse válido
+ -> class: IN (Internet), HS (Hesoid, usado internamente en algunos sitios) y CH
+ -> (Chaosnet, registros que se refieren al servidor, ej. version.bind.)
+ -> type: Clasificados en 4 grupos (Zona, Básicos, Seguridad y Opcionales), hay
+ -> gran cantidad de tipos aunque sólo unos pocos se usan habitualmente
+ -> data: Depende del tipo de registro
+----
+Ejercicio 2. Partiendo únicamente del servidor raíz a.root-servers.net y de las respuestas obtenidas de cada servidor obtener la dirección IP de informatica.ucm.es. Determinar el TTL de cada registro y completar la siguiente tabla:
+
+
+ ealcober@debian:~/forks/ASOR_UCM_LABORATORIO_2018/PRACTICAS_REDES/p3$ dig @a.root-servers.net informatica.ucm.es 
+
+; <<>> DiG 9.10.3-P4-Debian <<>> @a.root-servers.net informatica.ucm.es
+; (2 servers found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 41112
+;; flags: qr rd; QUERY: 1, ANSWER: 0, AUTHORITY: 8, ADDITIONAL: 17
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1472
+;; QUESTION SECTION:
+;informatica.ucm.es.		IN	A
+
+;; AUTHORITY SECTION:
+es.			172800	IN	NS	a.nic.es.
+es.			172800	IN	NS	f.nic.es.
+es.			172800	IN	NS	g.nic.es.
+es.			172800	IN	NS	ns1.cesca.es.
+es.			172800	IN	NS	ns3.nic.fr.
+es.			172800	IN	NS	ns-es.nic.fr.
+es.			172800	IN	NS	ns-ext.nic.cl.
+es.			172800	IN	NS	sns-pb.isc.org.
+
+;; ADDITIONAL SECTION:
+a.nic.es.		172800	IN	A	194.69.254.1
+f.nic.es.		172800	IN	A	130.206.1.7
+g.nic.es.		172800	IN	A	204.61.217.1
+ns1.cesca.es.		172800	IN	A	84.88.0.3
+ns3.nic.fr.		172800	IN	A	192.134.0.49
+ns-es.nic.fr.		172800	IN	A	194.0.9.1
+ns-ext.nic.cl.		172800	IN	A	200.1.123.14
+sns-pb.isc.org.		172800	IN	A	192.5.4.1
+a.nic.es.		172800	IN	AAAA	2001:67c:21cc:2000::64:41
+f.nic.es.		172800	IN	AAAA	2001:720:418:caf1::7
+g.nic.es.		172800	IN	AAAA	2001:500:14:7001:ad::1
+ns1.cesca.es.		172800	IN	AAAA	2001:40b0:1:1122:ce5c:a000:0:3
+ns3.nic.fr.		172800	IN	AAAA	2001:660:3006:1::1:1
+ns-es.nic.fr.		172800	IN	AAAA	2001:678:c::1
+ns-ext.nic.cl.		172800	IN	AAAA	2001:1398:1:0:200:1:123:14
+sns-pb.isc.org.		172800	IN	AAAA	2001:500:2e::1
+
+;; Query time: 57 msec
+;; SERVER: 198.41.0.4#53(198.41.0.4)
+;; WHEN: Mon Dec 24 19:21:53 CET 2018
+;; MSG SIZE  rcvd: 574
+
+
+# El registro Start of Authority (SOA) marca el comienzo de definición de una zona
+# El registro Name Server (NS) especifica los servidores autoritativos para la zona
+# El registro Address (A para IPv4 y AAAA para IPv6) es la base de DNS
+# El registros Pointer (PTR) contiene la traducción inversa (IP → nombre)
+# El registro Mail eXchanger (MX) es usado por los sistemas de correo para encaminar los mensajes eficientemente
+# El registro CNAME se usa para definir un nombre canónico de un dominio, que permite definir alias para el nombre canónico
+
+
+ealcober@debian:~/forks/ASOR_UCM_LABORATORIO_2018/PRACTICAS_REDES/p3$ dig @a.nic.es. informatica.ucm.es 
+
+; <<>> DiG 9.10.3-P4-Debian <<>> @a.nic.es. informatica.ucm.es
+; (2 servers found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 10348
+;; flags: qr rd; QUERY: 1, ANSWER: 0, AUTHORITY: 4, ADDITIONAL: 7
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;informatica.ucm.es.		IN	A
+
+;; AUTHORITY SECTION:
+ucm.es.			86400	IN	NS	chico.rediris.es.
+ucm.es.			86400	IN	NS	crispin.sim.ucm.es.
+ucm.es.			86400	IN	NS	sun.rediris.es.
+ucm.es.			86400	IN	NS	ucdns.sis.ucm.es.
+
+;; ADDITIONAL SECTION:
+sun.rediris.es.		86400	IN	A	130.206.1.2
+sun.rediris.es.		86400	IN	AAAA	2001:720:418:caf1::2
+chico.rediris.es.	86400	IN	A	130.206.1.3
+chico.rediris.es.	86400	IN	AAAA	2001:720:418:caf1::3
+ucdns.sis.ucm.es.	86400	IN	A	147.96.2.4
+crispin.sim.ucm.es.	86400	IN	A	147.96.1.9
+
+;; Query time: 26 msec
+;; SERVER: 194.69.254.1#53(194.69.254.1)
+;; WHEN: Mon Dec 24 19:22:32 CET 2018
+;; MSG SIZE  rcvd: 263
+
+ealcober@debian:~/forks/ASOR_UCM_LABORATORIO_2018/PRACTICAS_REDES/p3$ dig @ucdns.sis.ucm.es. informatica.ucm.es 
+
+; <<>> DiG 9.10.3-P4-Debian <<>> @ucdns.sis.ucm.es. informatica.ucm.es
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 47876
+;; flags: qr aa rd; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;informatica.ucm.es.		IN	A
+
+;; ANSWER SECTION:
+informatica.ucm.es.	86400	IN	CNAME	ucm.es.
+ucm.es.			86400	IN	A	147.96.1.15
+
+;; Query time: 23 msec
+;; SERVER: 147.96.2.4#53(147.96.2.4)
+;; WHEN: Mon Dec 24 19:22:49 CET 2018
+;; MSG SIZE  rcvd: 77
+
+
+
+Ejercicio 3. Obtener el registro SOA de ucm.es. usando un servidor autoritativo de la zona. Identificar los campos relevantes del registro.
+
+El registro Name Server (NS) especifica los servidores autoritativos para la zona
+
+ealcober@debian:~/forks/ASOR_UCM_LABORATORIO_2018/PRACTICAS_REDES/p3$ dig -t SOA @chico.rediris.es. ucm.es
+
+; <<>> DiG 9.10.3-P4-Debian <<>> -t SOA @chico.rediris.es. ucm.es
+; (2 servers found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9348
+;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 4, ADDITIONAL: 7
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;ucm.es.				IN	SOA
+
+;; ANSWER SECTION:
+ucm.es.			86400	IN	SOA	ucdns.sis.ucm.es. hostmaster.ucm.es. 2018121702 28800 7200 1209600 86400
+
+;; AUTHORITY SECTION:
+ucm.es.			86400	IN	NS	ucdns.sis.ucm.es.
+ucm.es.			86400	IN	NS	crispin.sim.ucm.es.
+ucm.es.			86400	IN	NS	sun.rediris.es.
+ucm.es.			86400	IN	NS	chico.rediris.es.
+
+;; ADDITIONAL SECTION:
+sun.rediris.es.		28800	IN	A	130.206.1.2
+sun.rediris.es.		7200	IN	AAAA	2001:720:418:caf1::2
+chico.rediris.es.	28800	IN	A	130.206.1.3
+chico.rediris.es.	7200	IN	AAAA	2001:720:418:caf1::3
+ucdns.sis.ucm.es.	86400	IN	A	147.96.2.4
+crispin.sim.ucm.es.	86400	IN	A	147.96.1.9
+
+;; Query time: 40 msec
+;; SERVER: 130.206.1.3#53(130.206.1.3)
+;; WHEN: Mon Dec 24 20:17:15 CET 2018
+;; MSG SIZE  rcvd: 298
+
+
+
+nombre de la zona - servidor primario de nombres de la zona - email - s/n   -refresh-updt. rty-expiry-nxdomain ttl 
+;; ANSWER SECTION:						|										  |	    | 		|	
+ucm.es.			86388	IN	SOA	ucdns.sis.ucm.es. hostmaster.ucm.es. 2018100501 28800 7200 1209600 86400
+																		... TEMPORIZADORES ... 
+temporizadores: esclavo comprueba cambios cada ref, en caso de fallo reintenta cada ret, sirve ex segundos el dominio si no hay maestro y cachea respuestas negativas durante nx segundos
+
+ejemplo traspas SOA
+
+example.com. IN
+SOA ns.example.com. admin.example.com. (
+2003080800 ; serial number (año,mes,día,secuencia)
+3h         ; refresh = 3 horas
+15M        ; update retry = 15 minutos
+3W12h      ; expiry = 3 semanas + 12 horas
+2h20M      ; nx ttl = 2 horas + 20 minutos)
+
+Ejercicio 4 ​ . Determinar qué servidor debería usarse para enviar un mail a ​ webmaster@fdi.ucm.es​ ,usar un servidor autoritativo de la zona.
+
+ealcober@debian:~/forks/ASOR_UCM_LABORATORIO_2018/PRACTICAS_REDES/p3$ dig -t mx  @chico.rediris.es. fdi.ucm.es
+
+; <<>> DiG 9.10.3-P4-Debian <<>> -t mx @chico.rediris.es. fdi.ucm.es
+; (2 servers found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 38750
+;; flags: qr aa rd; QUERY: 1, ANSWER: 5, AUTHORITY: 4, ADDITIONAL: 7
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;fdi.ucm.es.			IN	MX
+
+;; ANSWER SECTION:
+fdi.ucm.es.		86400	IN	MX	1 aspmx.l.google.com.
+fdi.ucm.es.		86400	IN	MX	5 alt1.aspmx.l.google.com.
+fdi.ucm.es.		86400	IN	MX	10 aspmx2.googlemail.com.
+fdi.ucm.es.		86400	IN	MX	10 aspmx3.googlemail.com.
+fdi.ucm.es.		86400	IN	MX	5 alt2.aspmx.l.google.com.
+
+;; AUTHORITY SECTION:
+ucm.es.			86400	IN	NS	sun.rediris.es.
+ucm.es.			86400	IN	NS	ucdns.sis.ucm.es.
+ucm.es.			86400	IN	NS	crispin.sim.ucm.es.
+ucm.es.			86400	IN	NS	chico.rediris.es.
+
+;; ADDITIONAL SECTION:
+sun.rediris.es.		28800	IN	A	130.206.1.2
+sun.rediris.es.		7200	IN	AAAA	2001:720:418:caf1::2
+chico.rediris.es.	28800	IN	A	130.206.1.3
+chico.rediris.es.	7200	IN	AAAA	2001:720:418:caf1::3
+ucdns.sis.ucm.es.	86400	IN	A	147.96.2.4
+crispin.sim.ucm.es.	86400	IN	A	147.96.1.9
+
+;; Query time: 36 msec
+;; SERVER: 130.206.1.3#53(130.206.1.3)
+;; WHEN: Mon Dec 24 20:21:42 CET 2018
+;; MSG SIZE  rcvd: 388
+
+
+Ejercicio 5 ​ . Determinar el nombre de dominio para ​ 147.96.85.71. Al igual que en el ejercicio 2,
+usar únicamente el servidor raíz ​ a.root-servers.net y las respuestas obtenidas a partir de éste.
+Completar la siguiente tabla:	
+ -x addr
+           Simplified reverse lookups, for mapping addresses to names. 
+
+ealcober@debian:~$ dig @a.root-servers.net -x 147.96.85.71
+
+; <<>> DiG 9.10.3-P4-Debian <<>> @a.root-servers.net -x 147.96.85.71
+; (2 servers found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 19100
+;; flags: qr rd; QUERY: 1, ANSWER: 0, AUTHORITY: 6, ADDITIONAL: 13
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;71.85.96.147.in-addr.arpa.	IN	PTR
+
+;; AUTHORITY SECTION:
+in-addr.arpa.		172800	IN	NS	e.in-addr-servers.arpa.
+in-addr.arpa.		172800	IN	NS	f.in-addr-servers.arpa.
+in-addr.arpa.		172800	IN	NS	d.in-addr-servers.arpa.
+in-addr.arpa.		172800	IN	NS	c.in-addr-servers.arpa.
+in-addr.arpa.		172800	IN	NS	b.in-addr-servers.arpa.
+in-addr.arpa.		172800	IN	NS	a.in-addr-servers.arpa.
+
+;; ADDITIONAL SECTION:
+e.in-addr-servers.arpa.	172800	IN	A	203.119.86.101
+e.in-addr-servers.arpa.	172800	IN	AAAA	2001:dd8:6::101
+f.in-addr-servers.arpa.	172800	IN	A	193.0.9.1
+f.in-addr-servers.arpa.	172800	IN	AAAA	2001:67c:e0::1
+d.in-addr-servers.arpa.	172800	IN	A	200.10.60.53
+d.in-addr-servers.arpa.	172800	IN	AAAA	2001:13c7:7010::53
+c.in-addr-servers.arpa.	172800	IN	A	196.216.169.10
+c.in-addr-servers.arpa.	172800	IN	AAAA	2001:43f8:110::10
+b.in-addr-servers.arpa.	172800	IN	A	199.253.183.183
+b.in-addr-servers.arpa.	172800	IN	AAAA	2001:500:87::87
+a.in-addr-servers.arpa.	172800	IN	A	199.180.182.53
+a.in-addr-servers.arpa.	172800	IN	AAAA	2620:37:e000::53
+
+;; Query time: 48 msec
+;; SERVER: 198.41.0.4#53(198.41.0.4)
+;; WHEN: Sun Oct 14 23:49:21 CEST 2018
+;; MSG SIZE  rcvd: 430
+
+ealcober@debian:~$ dig  -x 147.96.85.71 -t PTR
+
+; <<>> DiG 9.10.3-P4-Debian <<>> -x 147.96.85.71 -t PTR
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 22257
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1460
+;; QUESTION SECTION:
+;71.85.96.147.in-addr.arpa.	IN	PTR
+
+;; ANSWER SECTION:
+71.85.96.147.in-addr.arpa. 86400 IN	PTR	www.fdi.ucm.es.
+
+;; Query time: 9 msec
+;; SERVER: 80.58.61.250#53(80.58.61.250)
+;; WHEN: Sun Oct 14 23:52:42 CEST 2018
+;; MSG SIZE  rcvd: 82
+
+Ejercicio 6 ​ . Obtener la IP de ​ www.google.com usando el servidor por defecto. Usar el comando ​ dig
+con la opción ​ +trace​ y observar las consultas realizadas.
+
+ealcober@debian:~$ dig -t A +trace www.google.com. 
+
+; <<>> DiG 9.10.3-P4-Debian <<>> -t A +trace www.google.com.
+;; global options: +cmd
+.			53176	IN	NS	m.root-servers.net.
+.			53176	IN	NS	b.root-servers.net.
+.			53176	IN	NS	c.root-servers.net.
+.			53176	IN	NS	d.root-servers.net.
+.			53176	IN	NS	e.root-servers.net.
+.			53176	IN	NS	f.root-servers.net.
+.			53176	IN	NS	g.root-servers.net.
+.			53176	IN	NS	h.root-servers.net.
+.			53176	IN	NS	i.root-servers.net.
+.			53176	IN	NS	a.root-servers.net.
+.			53176	IN	NS	j.root-servers.net.
+.			53176	IN	NS	k.root-servers.net.
+.			53176	IN	NS	l.root-servers.net.
+;; Received 755 bytes from 80.58.61.250#53(80.58.61.250) in 4 ms
+
+com.			172800	IN	NS	l.gtld-servers.net.
+com.			172800	IN	NS	f.gtld-servers.net.
+com.			172800	IN	NS	b.gtld-servers.net.
+com.			172800	IN	NS	h.gtld-servers.net.
+com.			172800	IN	NS	d.gtld-servers.net.
+com.			172800	IN	NS	k.gtld-servers.net.
+com.			172800	IN	NS	e.gtld-servers.net.
+com.			172800	IN	NS	i.gtld-servers.net.
+com.			172800	IN	NS	c.gtld-servers.net.
+com.			172800	IN	NS	m.gtld-servers.net.
+com.			172800	IN	NS	j.gtld-servers.net.
+com.			172800	IN	NS	a.gtld-servers.net.
+com.			172800	IN	NS	g.gtld-servers.net.
+com.			86400	IN	DS	30909 8 2 E2D3C916F6DEEAC73294E8268FB5885044A833FC5459588F4A9184CF C41A5766
+com.			86400	IN	RRSIG	DS 8 1 86400 20181027170000 20181014160000 2134 . Wx8SVRqhdyeEPv0lhuJcUOcWUCnfN642PL1ScnLwh1PIQhFsK6lKrLMG FLS9BVDDe+vRJkK1q9Rv7vjUkrLqsownAub0qjMymLZ/9Vtvk7JmztcI 0ksV8mQQpR0UPA135EQ6vlLP9H1Mw3xLoH+LW4seC/uJTxXV3MNGSyzP qH16AhKQ0vocscylEF8wOhrCHu5aHYqyfLyEja4+1LwLhetB+ExicxnB q4Oa2hpbvSX3/JkLaP9QLguRj91vPvE1n0weIBTqVRZJsebguBE3rOiM Bs8qsZPgrAcF8XoIgUDj37czYfqYSbPE3mFxM2w4bQ+CAuPnqS58kX99 rF6y3w==
+;; Received 1174 bytes from 192.112.36.4#53(g.root-servers.net) in 121 ms
+
+google.com.		172800	IN	NS	ns2.google.com.
+google.com.		172800	IN	NS	ns1.google.com.
+google.com.		172800	IN	NS	ns3.google.com.
+google.com.		172800	IN	NS	ns4.google.com.
+CK0POJMG874LJREF7EFN8430QVIT8BSM.com. 86400 IN NSEC3 1 1 0 - CK0Q1GIN43N1ARRC9OSM6QPQR81H5M9A NS SOA RRSIG DNSKEY NSEC3PARAM
+CK0POJMG874LJREF7EFN8430QVIT8BSM.com. 86400 IN RRSIG NSEC3 8 2 86400 20181020121530 20181013110530 46475 com. dwbSHWsE9XgYaIlfAvddRHnM+SyareZ63CYwXOcbO3tcu7wpslbjNn37 tbqnZa89rsIKO1mzWUdxM5fQtXXj2k+haz8SV42mtiU9WvkXBx0jnUjn 18UXq+X1u/uLfwPOIIy0tDcFW8OdQB3nE18aCVIzy9YUcrFMilNQ+vP6 OSM=
+S849LHDDSVU9A9N2FIRO5NKMQB321BEP.com. 86400 IN NSEC3 1 1 0 - S84CFH3A62N0FJPC5D9IJ2VJR71OGLV5 NS DS RRSIG
+S849LHDDSVU9A9N2FIRO5NKMQB321BEP.com. 86400 IN RRSIG NSEC3 8 2 86400 20181020045927 20181013034927 46475 com. 05o91aUzWRIWuEscn1l7vytNshnao/0pHicigD1+PlHFzHqAbZNqwlGR fLI347YtDI/7vrMuqyJY3YZSuzbmj8ce7TF7BY0pufB6Vx0DhkOj4XVw 4Y4+5ZjoFQB3IGF6dy/V74anDXxaKaoc49Zi9w+9F9nouWNrrIGSFGa0 o/w=
+;; Received 776 bytes from 192.43.172.30#53(i.gtld-servers.net) in 41 ms
+
+www.google.com.		300	IN	A	216.58.201.164
+;; Received 48 bytes from 216.239.38.10#53(ns4.google.com) in 24 ms
+
+
+
+Zona directa (​ forward ​ )
+
+La máquina VM1 actuará como servidor de nombres del dominio ​ labfdi.es​ . La mayoría de los
+registros se incluyen en la zona directa.
+Ejercicio 1 ​ . Configurar el servidor de nombres añadiendo una entrada ​ zone para la zona directa en
+el fichero ​ /etc/named.conf​ . El tipo de servidor de la zona debe ser ​ master y el archivo que define
+la zona, ​ db.labfdi.es​ . Por ejemplo:
+zone "labfdi.es." {
+type master;
+file "db.labfdi.es";
+};
+Revisar la configuración por defecto y consultar la página de manual de ​ named.conf para ver las
+opciones disponibles para el servidor y las zonas. Por ejemplo, la recursión debe estar deshabilitada
+en servidores autoritativos y las consultas pueden estar restringidas a solo ciertas máquinas.
+Una vez creado el archivo de configuración, ejecutar el comando ​ named-checkconf para comprobar
+que la sintaxis es correcta.
+
+
+Ejercicio 2 ​ . Crear el archivo de la zona directa ​ labfdi.es. en ​ /var/named/db.labfdi.es con los
+registros especificados en la siguiente tabla. Especificar también la directiva ​ $TTL​ .
+Registro Descripción
+Start of Authority (SOA) Descripción de la zona. Se pueden elegir libremente los valores de refresh, update, expiry y nx ttl. El servidor primario de la zona es ​ ns.labfdi.es​ y el e-mail de contacto es ​ contact@labfdi.es​ .
+Servidor de nombres (NS) El servidor de nombres es ​ ns.labfdi.es​ , como se especifica en el registro SOA Dirección (A) del servidor de nombres La dirección de ​ ns.labfdi.es​ es ​ 192.168.0.1​ (VM1) Direcciones (A y AAAA) del servidor
+web Las direcciones de ​ www.labfdi.es​ son 192.168.0.200​ y fd00::1
+Servidor de correo (MX) El servidor de correo es ​ mail.labfdi.es Dirección (A) del servidor de correo La dirección de ​ mail.labfdi.es​ es 192.168.0.250
+Nombre canónico (CNAME) deservidor El nombre canónico de ​ servidor.labfdi.es​ esmail.labfdi.es
+Una vez generado el archivo de zona, se debe comprobar su integridad con el comando named-checkzone <nombre_zona> <archivo>​ .
+
+NOTA: ​ No olvidar que los nombres FQDN terminan en el dominio raíz (​ “.”​ ). El nombre de la zona puede especificarse con ​ @ ​ en el campo nombre del registro.
+
+Ejercicio 3 . ​ ​ Arrancar el servicio DNS con el comando ​ service named start.
+
+Ejercicio 4 . ​ Configurar la máquina virtual cliente para que use el nuevo servidor de nombres. Para ello, crear o modificar ​ /etc/resolv.conf con los nuevos valores para ​ nameserver y ​ search​ . Probar la resolución de nombres para ​ www.labfdi.es​ .
+
+Ejercicio 5 . ​ Usar el comando ​ dig para obtener la información del dominio ​ labfdi.es ofrecida por el
+servidor.
+
+todas las respuestas seguidas aquí:
+
+contenido named.conf servidor, VM1:
+options {
+	listen-on port 53 { any; };
+        listen-on-v6 port 53 { any; };
+        directory	"/var/named";
+        dump-file	"/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        allow-query     { any; }; <---------- AÑADIDA
+
+		recursion no; <---------- AÑADIDA
+
+        dnssec-enable yes;
+        dnssec-validation yes;
+
+        /* Path to ISC DLV key */
+        bindkeys-file "/etc/named.iscdlv.key";
+
+        managed-keys-directory "/var/named/dynamic";
+
+        pid-file "/run/named/named.pid";
+        session-keyfile "/run/named/session.key";
+};
+
+logging {
+	channel default_debug {
+                file "data/named.run";
+                severity dynamic;
+        };
+};
+
+zone "." IN {
+	type hint;
+        file "named.ca";
+};
+
+zone "labfdi.es." { <---------- AÑADIDA
+        type master;
+        file "db.labfdi.es";
+};
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+
+
+File: /var/named/db.labfdi.es                                                                                     
+
+$TTL 2d
+$ORIGIN labfdi.es
+
+labfdi.es.   IN   SOA   ns.labfdi.es.   contact.labfdi.es.  (
+                2003080800 ; #serial number
+                3h         ; #refresh
+                15M        ; #update retry
+                3W12H	   ; #expiry
+                2h20M	   ; #nx ttl
+                )
+
+                IN	NS	ns
+ns	IN	A	192.168.0.1
+www     IN	A	192.168.0.200
+www     IN	AAAA            fd00::1
+mail    IN	MX	10	mail
+mail    IN	A	192.168.0.250
+servidor 86400  IN	CNAME   mail.labfdi.es.
+
+resultado consulta en vm2
+
+[root@localhost ~]# host -v labfdi.es
+Trying "labfdi.es"
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 56635
+;; flags: qr aa rd; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;labfdi.es.			IN	A
+
+;; AUTHORITY SECTION:
+labfdi.es.		8400	IN	SOA	ns.labfdi.es. contact.labfdi.es. 2003080800 10800 900 1857600 8400
+
+Received 74 bytes from 192.168.0.1#53 in 0 ms
+Trying "labfdi.es"
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 40960
+;; flags: qr aa rd; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;labfdi.es.			IN	AAAA
+
+;; AUTHORITY SECTION:
+labfdi.es.		8400	IN	SOA	ns.labfdi.es. contact.labfdi.es. 2003080800 10800 900 1857600 8400
+
+Received 74 bytes from 192.168.0.1#53 in 0 ms
+Trying "labfdi.es"
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 28429
+;; flags: qr aa rd; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;labfdi.es.			IN	MX
+
+;; AUTHORITY SECTION:
+labfdi.es.		8400	IN	SOA	ns.labfdi.es. contact.labfdi.es. 2003080800 10800 900 1857600 8400
+
+Received 74 bytes from 192.168.0.1#53 in 0 ms
+
+[root@localhost ~]# host -a www.labfdi.es
+Trying "www.labfdi.es"
+Received 78 bytes from 192.168.0.1#53 in 0 ms
+Trying "www.labfdi.es.labfdi.es"
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 42922
+;; flags: qr aa rd; QUERY: 1, ANSWER: 2, AUTHORITY: 1, ADDITIONAL: 1
+
+;; QUESTION SECTION:
+;www.labfdi.es.labfdi.es.	IN	ANY
+
+;; ANSWER SECTION:
+www.labfdi.es.labfdi.es. 172800	IN	A	192.168.0.200
+www.labfdi.es.labfdi.es. 172800	IN	AAAA	fd00::1
+
+;; AUTHORITY SECTION:
+labfdi.es.		172800	IN	NS	ns.labfdi.es.labfdi.es.
+
+;; ADDITIONAL SECTION:
+ns.labfdi.es.labfdi.es.	172800	IN	A	192.168.0.1
+
+Received 118 bytes from 192.168.0.1#53 in 0 ms
+
+
+[root@localhost ~]# dig -t SOA labfdi.es
+
+; <<>> DiG 9.9.4-RedHat-9.9.4-61.el7_5.1 <<>> -t SOA labfdi.es
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 43534
+;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;labfdi.es.			IN	SOA
+
+;; ANSWER SECTION:
+labfdi.es.		172800	IN	SOA	ns.labfdi.es. contact.labfdi.es. 2003080800 10800 900 1857600 8400
+
+;; AUTHORITY SECTION:
+labfdi.es.		172800	IN	NS	ns.labfdi.es.labfdi.es.
+
+;; ADDITIONAL SECTION:
+ns.labfdi.es.labfdi.es.	172800	IN	A	192.168.0.1
+
+;; Query time: 0 msec
+;; SERVER: 192.168.0.1#53(192.168.0.1)
+;; WHEN: Wed Dec 26 20:07:25 CET 2018
+;; MSG SIZE  rcvd: 128
+
+
+Ejercicio 6 . ​ ​ Repetir alguna de las consultas anteriores y, con la ayuda de ​ wireshark​ :
+● Comprobar el protocolo y puerto usado por el cliente y servidor DNS
+● Estudiar el formato (campos incluidos y longitud) de los mensajes correspondientes a las preguntas y respuestas DNS.
+
+query
+Ethernet II, Src: 02:00:00:00:02:00 (02:00:00:00:02:00), Dst: 02:00:00:00:01:00 (02:00:00:00:01:00)
+Internet Protocol Version 4, Src: 192.168.0.100 (192.168.0.100), Dst: 192.168.0.1 (192.168.0.1)
+User Datagram Protocol, Src Port: 40983 (40983), Dst Port: domain (53)
+
+response
+Ethernet II, Src: 02:00:00:00:01:00 (02:00:00:00:01:00), Dst: 02:00:00:00:02:00 (02:00:00:00:02:00)
+Internet Protocol Version 4, Src: 192.168.0.1 (192.168.0.1), Dst: 192.168.0.100 (192.168.0.100)
+User Datagram Protocol, Src Port: domain (53), Dst Port: 40983 (40983)
+
+Zona inversa (​ reverse ) 
+
+Además, el servidor incluirá una base de datos para la búsqueda inversa. La zona inversa contiene
+los registros PTR correspondientes a las direcciones IP.
+Ejercicio 1 . ​ Añadir otra entrada ​ zone para la zona inversa ​ 0.168.192.in-addr.arpa. ​ en
+/etc/named.conf​ . El tipo de servidor de la zona debe ser ​ master y el archivo que define la zona,
+db.0.168.192​ .
+
+Ejercicio 2 . ​ Crear el archivo de la zona inversa en ​ /var/named/db.0.168.192 con los registros SOA,
+NS y PTR. Esta zona usará el mismo servidor de nombres y parámetros de configuración en el registro SOA.
+
+Ejercicio 3 . ​ Reiniciar el servicio DNS con el comando ​ service named restart (o bien, recargar la
+configuración con el comando ​ service named reload​ ).
+
+Ejercicio 4 . ​ Comprobar el funcionamiento de la resolución inversa, obteniendo el nombre asociado
+a ​ 192.168.0.250​ .
